@@ -134,7 +134,7 @@ pair<int, long> (*func_lambdas[64])(vector<pair<int, long>>) = {[](vector<pair<i
 	[](vector<pair<int, long>> args)->pair<int, long> {
 				if(is_int(args[0])) return f_create((float) get_int(args[0]) / 2.0);
 				else if(is_float(args[0])) return f_create(get_float(args[0]) / 2.0);
-				else{cout << error << "Invalid type or combination of types passed to '+.'" << endl; return make_pair(-1, 3);}},
+				else{cout << error << "Invalid type or combination of types passed to '-.'" << endl; return make_pair(-1, 3);}},
 	[](vector<pair<int, long>> args)->pair<int, long> {
 				if(is_int(args[0])) return make_pair(1, get_int(args[0]) * get_int(args[0]));
 				else if(is_float(args[0])) return f_create(get_float(args[0]) * get_float(args[0]));
@@ -359,7 +359,7 @@ int char_type(char c)
 
 int function_id(string s)
 {
-	if (debug) cout << "searching for function... ";
+	if (debug) cout << "searching for function " << s << "... " << flush;
 	for (string *i = functions.begin(); i < functions.end(); i++)
 	{
 		if((*i) == s)
@@ -407,18 +407,61 @@ pair<int, long> process(string *tokens, int length, bool defer)
 		{
 			if(length - (current_index - tokens) >= arity(funcid))
 			{
-				/*if(needs_deferred_processing(funcid))
+				if(funcid == 34) //wh.
 				{
-					vector<pair<int, long>> args{};
-					args.push_back(process(current_index, length - (current_index - tokens), defer));
-					for(int i = 2; i <= arity(funcid); i++)
+					string *hold_index = current_index;
+					pair<int, long> condition = process(current_index, length - (current_index - tokens), defer);
+					if(is_int(condition))
 					{
-						
+						pair<int, long> to_execute{make_pair(0, 0)};
+						while(get_int(condition) == 1)
+						{
+							if(debug) cout << "condition check passed..." << endl;
+							to_execute = process(current_index, length - (current_index - tokens), defer);
+							current_index = hold_index;
+							condition = process(current_index, length - (current_index - tokens), defer);
+							if(!is_int(condition)) // Necessary???
+							{
+								cout << error << "Non-integer type passed as second argument to while." << endl;
+								return make_pair(-1, 3);
+							}
+						}
+						return to_execute;
 					}
-					find_paired_keyword(current_index, length - (current_index - tokens), funcid);
+					else
+					{
+						cout << error << "Non-integer type passed as second argument to while." << endl;
+						return make_pair(-1, 3);
+					}
+				}
+				else if(funcid == 35) //~wh.
+				{
+					string *hold_index = current_index;
+					pair<int, long> condition = process(current_index, length - (current_index - tokens), defer);
+					if(is_int(condition))
+					{
+						pair<int, long> to_execute{make_pair(0, 0)};
+						while(get_int(condition) == 0)
+						{
+							to_execute = process(current_index, length - (current_index - tokens), defer);
+							current_index = hold_index;
+							condition = process(current_index, length - (current_index - tokens), defer);
+							if(!is_int(condition)) // Necessary???
+							{
+								cout << error << "Non-integer type passed as second argument to ~while." << endl;
+								return make_pair(-1, 3);
+							}
+						}
+						return to_execute;
+					}
+					else
+					{
+						cout << error << "Non-integer type passed as second argument to ~while." << endl;
+						return make_pair(-1, 3);
+					}
 				}
 				else
-				{*/
+				{
 					vector<pair<int, long>> args{};
 					for(int i = 1; i <= arity(funcid); i++)
 					{
@@ -440,10 +483,10 @@ pair<int, long> process(string *tokens, int length, bool defer)
 						}
 					}
 					pair<int, long> ret_val;
-					if(defer && funcid == 11)
+					if(defer && funcid == 11) //<-
 					{
-						//func_create(func_lambdas[funcid].copy());
-						//func_return_types[func_nextaddr] = 1; //fix
+						func_create(func_lambdas[funcid]);
+						func_return_types[func_nextaddr] = args[1].first;
 					}
 					else
 					{
@@ -461,7 +504,7 @@ pair<int, long> process(string *tokens, int length, bool defer)
 					{
 					}
 					return ret_val;
-				//}
+				}
 			}
 			else
 			{
