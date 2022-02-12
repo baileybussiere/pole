@@ -422,7 +422,7 @@ pair<int, long> process(string *tokens, int length, bool defer)
 							condition = process(current_index, length - (current_index - tokens), defer);
 							if(!is_int(condition)) // Necessary???
 							{
-								cout << error << "Non-integer type passed as second argument to while." << endl;
+								cout << error << "Non-integer type passed as second argument to wh." << endl;
 								return make_pair(-1, 3);
 							}
 						}
@@ -430,7 +430,7 @@ pair<int, long> process(string *tokens, int length, bool defer)
 					}
 					else
 					{
-						cout << error << "Non-integer type passed as second argument to while." << endl;
+						cout << error << "Non-integer type passed as second argument to wh." << endl;
 						return make_pair(-1, 3);
 					}
 				}
@@ -448,7 +448,7 @@ pair<int, long> process(string *tokens, int length, bool defer)
 							condition = process(current_index, length - (current_index - tokens), defer);
 							if(!is_int(condition)) // Necessary???
 							{
-								cout << error << "Non-integer type passed as second argument to ~while." << endl;
+								cout << error << "Non-integer type passed as second argument to ~wh." << endl;
 								return make_pair(-1, 3);
 							}
 						}
@@ -456,8 +456,48 @@ pair<int, long> process(string *tokens, int length, bool defer)
 					}
 					else
 					{
-						cout << error << "Non-integer type passed as second argument to ~while." << endl;
+						cout << error << "Non-integer type passed as second argument to ~wh." << endl;
 						return make_pair(-1, 3);
+					}
+				}
+				else if(funcid == 8) //if.
+				{
+					pair<int, long> condition = process(current_index, length - (current_index - tokens), defer);
+					if(is_int(condition))
+					{
+						if(get_int(condition) == 1)
+						{
+							return process(current_index, length - (current_index - tokens), defer);
+						}
+						else
+						{
+							process(current_index, length - (current_index - tokens), true);
+							return process(current_index, length - (current_index - tokens), defer);
+						}
+					}
+					else
+					{
+						cout << error << "Non-integer type passed as third argument to if." << endl;
+					}
+				}
+				else if(funcid == 9) //~if.
+				{
+					pair<int, long> condition = process(current_index, length - (current_index - tokens), defer);
+					if(is_int(condition))
+					{
+						if(get_int(condition) == 0)
+						{
+							return process(current_index, length - (current_index - tokens), defer);
+						}
+						else
+						{
+							process(current_index, length - (current_index - tokens), true);
+							return process(current_index, length - (current_index - tokens), defer);
+						}
+					}
+					else
+					{
+						cout << error << "Non-integer type passed as third argument to ~if." << endl;
 					}
 				}
 				else
